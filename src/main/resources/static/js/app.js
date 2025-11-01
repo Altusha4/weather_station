@@ -44,6 +44,7 @@ class WeatherSimulator {
 
         document.getElementById('notification-type').addEventListener('change', () => this.updateBridgeConfig());
         document.getElementById('sender-type').addEventListener('change', () => this.updateBridgeConfig());
+        document.getElementById('send-notifications').addEventListener('click', () => this.notifyObservers());
     }
 
     async setRealTimeStrategy() {
@@ -204,7 +205,7 @@ class WeatherSimulator {
 
     addObserver(name) {
         const observer = {
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             name: name,
             notificationType: this.bridgeConfig.notificationType,
             senderType: this.bridgeConfig.senderType,
@@ -229,20 +230,27 @@ class WeatherSimulator {
 
     notifyObservers() {
         if (this.observers.length === 0) {
-            this.logEvent('No observers to notify');
+            this.logEvent('❌ No observers to notify');
             return;
         }
 
+        this.logEvent(`📢 Sending notifications to ${this.observers.length} observers...`);
+
         this.observers.forEach(observer => {
+            const notificationType = observer.notificationType || this.bridgeConfig.notificationType;
+            const senderType = observer.senderType || this.bridgeConfig.senderType;
+
             let message = '';
-            if (observer.notificationType === 'urgent') {
-                message = `🚨 URGENT ${observer.senderType.toUpperCase()}: ${observer.name} - ${this.weatherData.temperature.toFixed(1)}°C`;
+            if (notificationType === 'urgent') {
+                message = `🚨 URGENT: ${this.weatherData.temperature.toFixed(1)}°C weather alert`;
             } else {
-                message = `⏰ ${observer.senderType.toUpperCase()}: ${observer.name} - ${this.weatherData.description}`;
+                message = `⏰ Scheduled: ${this.weatherData.description}`;
             }
-            this.addNotification(message, observer.notificationType);
+
+            this.addNotification(message, notificationType, senderType, observer.name);
         });
-        this.logEvent(`Notified ${this.observers.length} observers`);
+
+        this.logEvent(`✅ Notifications sent to ${this.observers.length} observers`);
     }
 
     updateBridgeConfig() {
@@ -251,24 +259,47 @@ class WeatherSimulator {
         this.logEvent(`🔧 Bridge configured: ${this.bridgeConfig.notificationType} + ${this.bridgeConfig.senderType}`);
     }
 
-    addNotification(message, type) {
+    addNotification(message, type, senderType, deviceName) {
+        console.log('🔔 ADDING NOTIFICATION:', { message, type, senderType, deviceName });
+
         const notification = {
-            message,
-            type,
+            message: message,
+            type: type || 'scheduled',
+            senderType: senderType || 'push',
+            deviceName: deviceName || 'Unknown Device',
             timestamp: new Date().toLocaleTimeString()
         };
+
         this.notifications.unshift(notification);
-        if (this.notifications.length > 8) this.notifications.pop();
+        if (this.notifications.length > 10) this.notifications.pop();
+
+        console.log('📋 NOTIFICATIONS ARRAY:', this.notifications);
         this.updateNotificationsDisplay();
     }
 
     updateNotificationsDisplay() {
         const container = document.getElementById('notifications');
-        container.innerHTML = this.notifications.map(notif =>
-            `<div class="notification-item ${notif.type === 'urgent' ? 'urgent' : ''}">
-                [${notif.timestamp}] ${notif.message}
-            </div>`
-        ).join('');
+        console.log('🔄 UPDATING NOTIFICATIONS DISPLAY, container:', container);
+
+        if (!container) {
+            console.error('❌ NOTIFICATIONS CONTAINER NOT FOUND!');
+            return;
+        }
+
+        if (this.notifications.length === 0) {
+            container.innerHTML = '<div class="log-entry">No notifications yet</div>';
+            return;
+        }
+
+        container.innerHTML = this.notifications.map(notif => `
+        <div class="notification-item ${notif.type === 'urgent' ? 'urgent' : ''}">
+            <strong>${notif.deviceName}</strong><br>
+            <small>${notif.message}</small><br>
+            <small>via ${notif.senderType} • ${notif.timestamp}</small>
+        </div>
+    `).join('');
+
+        console.log('✅ NOTIFICATIONS DISPLAY UPDATED');
     }
 
     logEvent(message) {
