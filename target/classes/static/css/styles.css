@@ -335,3 +335,32 @@ body::before {
     pointer-events: none;
     z-index: -1;
 }
+.manual-input {
+    background: rgba(234, 241, 244, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 15px;
+}
+
+.manual-input h3 {
+    color: #8cbcdc;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.manual-input input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid rgba(140, 188, 220, 0.3);
+    border-radius: 8px;
+    font-size: 14px;
+    background: rgba(234, 241, 244, 0.9);
+    color: #08427c;
+}
+
+.manual-input input:focus {
+    outline: none;
+    border-color: #0f76de;
+}

@@ -17,52 +17,31 @@ public class WeatherDemo {
         System.out.println("3. Factory Pattern");
         System.out.println("4. Bridge Pattern\n");
 
-        // Factory Pattern: создаем устройства
         System.out.println("--- Factory Pattern: Creating Devices ---");
         ObserverFactory mobileFactory = new MobileObserverFactory();
         ObserverFactory webFactory = new WebObserverFactory();
-        ObserverFactory smartHomeFactory = new SmartHomeFactory();
 
-        // Добавляем наблюдателей
         station.addObserver(mobileFactory.createDisplay());
         station.addObserver(webFactory.createDisplay());
-        station.addObserver(smartHomeFactory.createController());
 
-        // Bridge Pattern: настраиваем уведомления
         System.out.println("\n--- Bridge Pattern: Configuring Notifications ---");
         NotificationSender pushSender = new PushNotificationSender();
-        NotificationSender voiceSender = new VoiceNotificationSender();
-
         Notification urgentPush = new UrgentNotification(pushSender);
-        Notification scheduledVoice = new ScheduledNotification(voiceSender);
 
-        // Strategy Pattern: демонстрация смены стратегий
-        System.out.println("\n--- Strategy Pattern: Real-time Updates ---");
+        System.out.println("\n--- Strategy: Real-time (on-demand) ---");
         station.setUpdateStrategy(new RealTimeStrategy());
-        simulateUpdates(station, 2);
+        station.updateWeatherData();
 
-        System.out.println("\n--- Strategy Pattern: Scheduled Updates ---");
+        System.out.println("\n--- Strategy: Scheduled (hourly forecast) ---");
         station.setUpdateStrategy(new ScheduledStrategy());
-        simulateUpdates(station, 2);
+        station.updateWeatherData();
 
-        System.out.println("\n--- Strategy Pattern: Manual Input ---");
+        System.out.println("\n--- Strategy: Manual Input ---");
         ManualStrategy manualStrategy = new ManualStrategy();
-        manualStrategy.setManualData(30.0, 40.0, 1005.0, 20.0, "Heat Wave");
+        manualStrategy.setManualData(25.5, 80.0, 1008.0, 15.0);
         station.setUpdateStrategy(manualStrategy);
-        simulateUpdates(station, 1);
+        station.updateWeatherData();
 
-        System.out.println("\n=== Demo Completed Successfully ===");
-    }
-
-    private static void simulateUpdates(WeatherStation station, int count) {
-        for (int i = 0; i < count; i++) {
-            try {
-                Thread.sleep(2000);
-                station.updateWeatherData();
-                System.out.println("--- Update " + (i + 1) + " completed ---");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        System.out.println("\n=== Demo Completed ===");
     }
 }

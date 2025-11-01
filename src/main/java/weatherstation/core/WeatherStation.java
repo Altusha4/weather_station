@@ -2,9 +2,11 @@ package weatherstation.core;
 
 import weatherstation.core.observer.Observer;
 import weatherstation.core.strategy.UpdateStrategy;
+import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class WeatherStation {
     private List<Observer> observers;
     private UpdateStrategy updateStrategy;

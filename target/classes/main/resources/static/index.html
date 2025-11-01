@@ -61,11 +61,14 @@
                 <div id="description" class="weather-desc">--</div>
             </div>
 
-            <div class="manual-input">
-                <h3>Manual Input</h3>
-                <input type="number" id="manual-temp" placeholder="Temperature">
-                <input type="number" id="manual-humidity" placeholder="Humidity">
-                <button id="update-manual" class="btn">Update</button>
+            <!-- Manual Input Section -->
+            <div id="manual-input-section" class="manual-input" style="display: none;">
+                <h3>Manual Weather Data</h3>
+                <input type="number" id="manual-temp" placeholder="Temperature (-60 to 60°C)" step="0.1" min="-60" max="60">
+                <input type="number" id="manual-humidity" placeholder="Humidity (0 to 100%)" step="0.1" min="0" max="100">
+                <input type="number" id="manual-pressure" placeholder="Pressure (870 to 1085 hPa)" step="1" min="870" max="1085">
+                <input type="number" id="manual-wind" placeholder="Wind Speed (0 to 150 km/h)" step="0.1" min="0" max="150">
+                <button id="update-manual" class="btn">Apply Manual Data</button>
             </div>
         </div>
 

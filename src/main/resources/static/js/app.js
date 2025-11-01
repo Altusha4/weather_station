@@ -11,16 +11,26 @@ class WeatherSimulator {
         };
         this.eventLog = [];
         this.notifications = [];
-        this.updateInterval = null;
 
         this.initializeEventListeners();
-        this.startRealTimeUpdates();
+        this.loadInitialWeather();
+    }
+
+    async loadInitialWeather() {
+        try {
+            const response = await fetch('/api/weather/current');
+            const data = await response.json();
+            this.weatherData = data;
+            this.updateWeatherDisplay();
+        } catch (error) {
+            console.log('Using default weather data');
+        }
     }
 
     initializeEventListeners() {
-        document.getElementById('realtime-btn').addEventListener('click', () => this.setStrategy('realtime'));
-        document.getElementById('scheduled-btn').addEventListener('click', () => this.setStrategy('scheduled'));
-        document.getElementById('manual-btn').addEventListener('click', () => this.setStrategy('manual'));
+        document.getElementById('realtime-btn').addEventListener('click', () => this.setRealTimeStrategy());
+        document.getElementById('scheduled-btn').addEventListener('click', () => this.setScheduledStrategy());
+        document.getElementById('manual-btn').addEventListener('click', () => this.setManualStrategy());
 
         document.getElementById('mobile-factory').addEventListener('click', () => this.addMobileDevices());
         document.getElementById('web-factory').addEventListener('click', () => this.addWebComponents());
@@ -32,83 +42,148 @@ class WeatherSimulator {
         document.getElementById('sender-type').addEventListener('change', () => this.updateBridgeConfig());
     }
 
-    setStrategy(strategy) {
-        this.currentStrategy = strategy;
-
-        document.querySelectorAll('.strategy-buttons .btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`${strategy}-btn`).classList.add('active');
-
-        this.logEvent(`Strategy changed to: ${strategy}`);
-
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-        }
-
-        switch(strategy) {
-            case 'realtime':
-                this.startRealTimeUpdates();
-                break;
-            case 'scheduled':
-                this.startScheduledUpdates();
-                break;
-            case 'manual':
-                break;
-        }
-    }
-
-    startRealTimeUpdates() {
-        this.updateInterval = setInterval(() => {
+    async setRealTimeStrategy() {
+        try {
+            const response = await fetch('/api/weather/strategy/realtime', { method: 'POST' });
+            const data = await response.json();
+            this.weatherData = data;
+            this.updateWeatherDisplay();
+            this.setStrategy('realtime');
+            this.logEvent('Real-time data loaded from server');
+        } catch (error) {
             this.generateRealTimeData();
             this.updateWeatherDisplay();
-            this.notifyObservers();
-        }, 3000);
+            this.setStrategy('realtime');
+            this.logEvent('Real-time data generated locally');
+        }
     }
 
-    startScheduledUpdates() {
-        this.updateInterval = setInterval(() => {
+    async setScheduledStrategy() {
+        try {
+            const response = await fetch('/api/weather/strategy/scheduled', { method: 'POST' });
+            const data = await response.json();
+            this.weatherData = data;
+            this.updateWeatherDisplay();
+            this.setStrategy('scheduled');
+            this.logEvent('Scheduled forecast loaded from server');
+        } catch (error) {
             this.generateScheduledData();
             this.updateWeatherDisplay();
-            this.notifyObservers();
-        }, 10000);
+            this.setStrategy('scheduled');
+            this.logEvent('Scheduled forecast generated locally');
+        }
     }
 
-    generateRealTimeData() {
-        this.weatherData.temperature += (Math.random() - 0.5) * 2;
-        this.weatherData.temperature = Math.max(-10, Math.min(40, this.weatherData.temperature));
-        this.weatherData.humidity = 60 + Math.random() * 20;
-        this.weatherData.pressure = 1010 + Math.random() * 10;
-        this.weatherData.windSpeed = 5 + Math.random() * 15;
-        this.weatherData.description = this.getWeatherDescription(this.weatherData.temperature);
+    setManualStrategy() {
+        this.setStrategy('manual');
+        this.showManualInput();
+    }
 
-        this.logEvent('Real-time data generated');
+    async updateManualData() {
+        const temp = parseFloat(document.getElementById('manual-temp').value);
+        const humidity = parseFloat(document.getElementById('manual-humidity').value);
+        const pressure = parseFloat(document.getElementById('manual-pressure').value);
+        const windSpeed = parseFloat(document.getElementById('manual-wind').value);
+
+        const validation = this.validateManualData(temp, humidity, pressure, windSpeed);
+        if (!validation.isValid) {
+            this.logEvent(`❌ Invalid data: ${validation.message}`);
+            alert(`❌ Invalid data: ${validation.message}\n\nPlease enter realistic values:\n• Temperature: -60 to 60°C\n• Humidity: 0 to 100%\n• Pressure: 870 to 1085 hPa\n• Wind: 0 to 150 km/h`);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/weather/strategy/manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    temp: temp,
+                    humidity: humidity,
+                    pressure: pressure,
+                    wind: windSpeed
+                })
+            });
+            const data = await response.json();
+            this.weatherData = data;
+            this.updateWeatherDisplay();
+            this.logEvent(`✅ Manual data applied: ${temp}°C, ${humidity}%`);
+        } catch (error) {
+            console.error('API error:', error);
+            // Локальный fallback
+            this.weatherData.temperature = temp;
+            this.weatherData.humidity = humidity;
+            this.weatherData.pressure = pressure;
+            this.weatherData.windSpeed = windSpeed;
+            this.weatherData.description = "Manual Data";
+            this.updateWeatherDisplay();
+            this.logEvent(`✅ Manual data applied locally: ${temp}°C, ${humidity}%`);
+        }
+        document.getElementById('manual-temp').value = '';
+        document.getElementById('manual-humidity').value = '';
+        document.getElementById('manual-pressure').value = '';
+        document.getElementById('manual-wind').value = '';
+    }
+
+    validateManualData(temp, humidity, pressure, windSpeed) {
+        if (isNaN(temp) || isNaN(humidity) || isNaN(pressure) || isNaN(windSpeed)) {
+            return { isValid: false, message: "All fields must be filled" };
+        }
+        if (temp < -60 || temp > 60) {
+            return { isValid: false, message: "Temperature must be between -60°C and 60°C" };
+        }
+
+        if (humidity < 0 || humidity > 100) {
+            return { isValid: false, message: "Humidity must be between 0% and 100%" };
+        }
+
+        if (pressure < 870 || pressure > 1085) {
+            return { isValid: false, message: "Pressure must be between 870 hPa and 1085 hPa" };
+        }
+
+        if (windSpeed < 0 || windSpeed > 150) {
+            return { isValid: false, message: "Wind speed must be between 0 km/h and 150 km/h" };
+        }
+
+        return { isValid: true, message: "Data is valid" };
+    }
+
+    setStrategy(strategy) {
+        this.currentStrategy = strategy;
+        document.querySelectorAll('.strategy-buttons .btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${strategy}-btn`).classList.add('active');
+        this.logEvent(`Strategy: ${strategy}`);
+    }
+
+    showManualInput() {
+        document.getElementById('manual-input-section').style.display = 'block';
+    }
+
+    hideManualInput() {
+        document.getElementById('manual-input-section').style.display = 'none';
+    }
+
+    // ... остальные методы без изменений ...
+    generateRealTimeData() {
+        this.weatherData.temperature = 18 + (Math.random() * 15);
+        this.weatherData.humidity = 50 + (Math.random() * 40);
+        this.weatherData.pressure = 1005 + (Math.random() * 20);
+        this.weatherData.windSpeed = 2 + (Math.random() * 18);
+        this.weatherData.description = this.getWeatherDescription(this.weatherData.temperature);
     }
 
     generateScheduledData() {
-        const temps = [22.0, 18.5, 25.0, 16.0, 20.5];
-        this.weatherData.temperature = temps[Math.floor(Math.random() * temps.length)];
-        this.weatherData.humidity = 65 + Math.random() * 10;
-        this.weatherData.description = 'Scheduled Update';
-
-        this.logEvent('Scheduled data generated');
-    }
-
-    getWeatherDescription(temp) {
-        if (temp > 25) return 'Sunny';
-        if (temp > 15) return 'Partly Cloudy';
-        return 'Cloudy';
-    }
-
-    updateManualData() {
-        const temp = parseFloat(document.getElementById('manual-temp').value) || this.weatherData.temperature;
-        const humidity = parseFloat(document.getElementById('manual-humidity').value) || this.weatherData.humidity;
-
-        this.weatherData.temperature = temp;
-        this.weatherData.humidity = humidity;
-        this.weatherData.description = 'Manual Input';
-
-        this.updateWeatherDisplay();
-        this.notifyObservers();
-        this.logEvent('Manual data updated');
+        const forecasts = [
+            { temp: 16, desc: "🌅 Morning: 16°C, Partly Cloudy" },
+            { temp: 22, desc: "☀️ Noon: 22°C, Sunny" },
+            { temp: 19, desc: "🌇 Evening: 19°C, Breezy" },
+            { temp: 14, desc: "🌙 Night: 14°C, Clear" }
+        ];
+        const forecast = forecasts[Math.floor(Math.random() * forecasts.length)];
+        this.weatherData.temperature = forecast.temp;
+        this.weatherData.humidity = 65;
+        this.weatherData.pressure = 1013;
+        this.weatherData.windSpeed = 8;
+        this.weatherData.description = forecast.desc;
     }
 
     updateWeatherDisplay() {
@@ -121,20 +196,20 @@ class WeatherSimulator {
 
     addMobileDevices() {
         const devices = ['Weather Display', 'Push Notifications', 'Quick Controls'];
-        devices.forEach(device => this.addObserver(`Mobile: ${device}`));
-        this.logEvent('Mobile factory created 3 devices');
+        devices.forEach(device => this.addObserver(`📱 ${device}`));
+        this.logEvent('Mobile Factory: Created 3 devices');
     }
 
     addWebComponents() {
         const components = ['Dashboard', 'Alert Panel', 'Settings Panel'];
-        components.forEach(component => this.addObserver(`Website: ${component}`));
-        this.logEvent('Web factory created 3 components');
+        components.forEach(component => this.addObserver(`🖥️ ${component}`));
+        this.logEvent('Web Factory: Created 3 components');
     }
 
     addSmartHome() {
         const devices = ['Wall Display', 'Voice Assistant', 'Climate Control'];
-        devices.forEach(device => this.addObserver(`SmartHome: ${device}`));
-        this.logEvent('SmartHome factory created 3 devices');
+        devices.forEach(device => this.addObserver(`🏠 ${device}`));
+        this.logEvent('SmartHome Factory: Created 3 devices');
     }
 
     addObserver(name) {
@@ -150,6 +225,11 @@ class WeatherSimulator {
     }
 
     notifyObservers() {
+        if (this.observers.length === 0) {
+            this.logEvent('No observers to notify');
+            return;
+        }
+
         const notificationType = document.getElementById('notification-type').value;
         const senderType = document.getElementById('sender-type').value;
 
@@ -157,9 +237,9 @@ class WeatherSimulator {
             let message = '';
 
             if (notificationType === 'urgent') {
-                message = `URGENT ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.temperature.toFixed(1)}°C`;
+                message = `🚨 URGENT ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.description}`;
             } else {
-                message = `SCHEDULED ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.description}`;
+                message = `⏰ ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.description}`;
             }
 
             this.addNotification(message, notificationType);
@@ -171,7 +251,7 @@ class WeatherSimulator {
     updateBridgeConfig() {
         const notificationType = document.getElementById('notification-type').value;
         const senderType = document.getElementById('sender-type').value;
-        this.logEvent(`Bridge config: ${notificationType} + ${senderType}`);
+        this.logEvent(`Bridge: ${notificationType} via ${senderType}`);
     }
 
     addNotification(message, type) {
@@ -182,7 +262,7 @@ class WeatherSimulator {
         };
 
         this.notifications.unshift(notification);
-        if (this.notifications.length > 10) this.notifications.pop();
+        if (this.notifications.length > 8) this.notifications.pop();
 
         this.updateNotificationsDisplay();
     }
@@ -199,7 +279,7 @@ class WeatherSimulator {
     logEvent(message) {
         const timestamp = new Date().toLocaleTimeString();
         this.eventLog.unshift(`[${timestamp}] ${message}`);
-        if (this.eventLog.length > 20) this.eventLog.pop();
+        if (this.eventLog.length > 12) this.eventLog.pop();
 
         this.updateEventLog();
     }
