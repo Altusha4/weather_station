@@ -10,28 +10,94 @@
 <div class="container">
     <header>
         <h1>Weather Notification System</h1>
-        <p>Demonstrating 4 Design Patterns</p>
     </header>
 
     <div class="dashboard">
+        <!-- Основная колонка - Погода -->
+        <div class="panel weather-panel">
+            <h2>🌤️ Weather Information</h2>
+
+            <div class="weather-main">
+                <div class="current-weather">
+                    <div class="weather-icon">☀️</div>
+                    <div class="weather-primary">
+                        <div id="temperature" class="weather-temp">--°C</div>
+                        <div id="description" class="weather-desc">--</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Humidity</span>
+                        <span id="humidity" class="detail-value">--%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Pressure</span>
+                        <span id="pressure" class="detail-value">-- hPa</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Wind Speed</span>
+                        <span id="wind" class="detail-value">-- km/h</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Select City</h3>
+                <div class="city-buttons">
+                    <button data-city="almaty" class="btn city-btn active">Almaty</button>
+                    <button data-city="astana" class="btn city-btn">Astana</button>
+                    <button data-city="shymkent" class="btn city-btn">Shymkent</button>
+                    <button data-city="aktobe" class="btn city-btn">Aktobe</button>
+                    <button data-city="karaganda" class="btn city-btn">Karaganda</button>
+                    <button data-city="aktau" class="btn city-btn">Aktau</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>24-Hour Forecast</h3>
+                <div class="weather-carousel">
+                    <button class="carousel-btn prev-btn">‹</button>
+                    <div class="carousel-container">
+                        <div class="carousel-track"></div>
+                    </div>
+                    <button class="carousel-btn next-btn">›</button>
+                </div>
+                <div class="carousel-progress" style="text-align: center; margin-top: 8px; color: #75b4e3; font-size: 0.8em;">
+                    Use arrows to scroll through hours
+                </div>
+            </div>
+
+            <div id="manual-input-section" class="manual-input" style="display: none;">
+                <h3>⚙️ Manual Weather Data</h3>
+                <div class="input-grid">
+                    <input type="number" id="manual-temp" placeholder="Temperature °C" step="0.1" min="-60" max="60">
+                    <input type="number" id="manual-humidity" placeholder="Humidity %" step="0.1" min="0" max="100">
+                    <input type="number" id="manual-pressure" placeholder="Pressure hPa" step="1" min="870" max="1085">
+                    <input type="number" id="manual-wind" placeholder="Wind Speed km/h" step="0.1" min="0" max="150">
+                </div>
+                <button id="update-manual" class="btn">Apply Manual Data</button>
+            </div>
+        </div>
+
+        <!-- Центральная колонка - Управление системой -->
         <div class="panel control-panel">
-            <h2>Control Panel</h2>
+            <h2>System Control</h2>
 
             <div class="section">
                 <h3>Update Strategies</h3>
                 <div class="strategy-buttons">
-                    <button id="realtime-btn" class="btn active">Real-time</button>
-                    <button id="scheduled-btn" class="btn">Scheduled</button>
-                    <button id="manual-btn" class="btn">Manual</button>
+                    <button id="realtime-btn" class="btn strategy-btn active">Real-time</button>
+                    <button id="scheduled-btn" class="btn strategy-btn">Scheduled</button>
+                    <button id="manual-btn" class="btn strategy-btn">Manual</button>
                 </div>
             </div>
 
             <div class="section">
                 <h3>Observer Factories</h3>
                 <div class="factory-buttons">
-                    <button id="mobile-factory" class="btn">Add Mobile Device</button>
-                    <button id="web-factory" class="btn">Add Web Device</button>
-                    <button id="smarthome-factory" class="btn">Add Smart Home</button>
+                    <button id="mobile-factory" class="btn factory-btn">Add Mobile Device</button>
+                    <button id="web-factory" class="btn factory-btn">Add Web Device</button>
+                    <button id="smarthome-factory" class="btn factory-btn">Add Smart Home</button>
                 </div>
             </div>
 
@@ -40,67 +106,45 @@
                 <div class="bridge-config">
                     <select id="notification-type">
                         <option value="urgent">Urgent Notification</option>
-                        <option value="scheduled">Scheduled Notification</option>
+                        <option value="scheduled" selected>Scheduled Notification</option>
                     </select>
                     <select id="sender-type">
-                        <option value="push">Push Notification</option>
+                        <option value="push" selected>Push Notification</option>
                         <option value="email">Email</option>
                         <option value="voice">Voice</option>
                     </select>
                 </div>
             </div>
+
             <div class="section">
-                <h3>Select City</h3>
-                <div class="city-buttons">
-                    <button data-city="almaty" class="btn city-btn">Almaty</button>
-                    <button data-city="astana" class="btn city-btn">Astana</button>
-                    <button data-city="shymkent" class="btn city-btn">Shymkent</button>
-                    <button data-city="aktobe" class="btn city-btn">Aktobe</button>
-                    <button data-city="karaganda" class="btn city-btn">Karaganda</button>
-                    <button data-city="aktau" class="btn city-btn">Aktau</button>
-                </div>
-            </div>
-            <div class="section">
-                <h3>Send Notifications</h3>
-                <button id="send-notifications" class="btn">Send Notifications</button>
+                <h3>Notifications</h3>
+                <button id="send-notifications" class="btn notify-btn">Send Notifications</button>
             </div>
         </div>
 
-        <div class="panel weather-panel">
-            <h2>Current Weather</h2>
-            <div class="weather-display">
-                <div id="temperature" class="weather-value">--°C</div>
-                <div id="humidity" class="weather-value">--%</div>
-                <div id="pressure" class="weather-value">-- hPa</div>
-                <div id="wind" class="weather-value">-- km/h</div>
-                <div id="description" class="weather-desc">--</div>
-            </div>
-            <div id="manual-input-section" class="manual-input" style="display: none;">
-                <h3>Manual Weather Data</h3>
-                <input type="number" id="manual-temp" placeholder="Temperature (-60 to 60°C)" step="0.1" min="-60" max="60">
-                <input type="number" id="manual-humidity" placeholder="Humidity (0 to 100%)" step="0.1" min="0" max="100">
-                <input type="number" id="manual-pressure" placeholder="Pressure (870 to 1085 hPa)" step="1" min="870" max="1085">
-                <input type="number" id="manual-wind" placeholder="Wind Speed (0 to 150 km/h)" step="0.1" min="0" max="150">
-                <button id="update-manual" class="btn">Apply Manual Data</button>
-            </div>
-        </div>
-
+        <!-- Правая колонка - Мониторинг -->
         <div class="panel monitor-panel">
             <h2>System Monitor</h2>
 
             <div class="section">
                 <h3>Active Observers</h3>
-                <div id="observers-list" class="observers-list"></div>
+                <div id="observers-list" class="observers-list">
+                    <div class="empty-state">No observers yet</div>
+                </div>
             </div>
 
             <div class="section">
                 <h3>Event Log</h3>
-                <div id="event-log" class="event-log"></div>
+                <div id="event-log" class="event-log">
+                    <div class="empty-state">Event log will appear here</div>
+                </div>
             </div>
 
             <div class="section">
                 <h3>Notifications</h3>
-                <div id="notifications" class="notifications"></div>
+                <div id="notifications" class="notifications">
+                    <div class="empty-state">No notifications yet</div>
+                </div>
             </div>
         </div>
     </div>
