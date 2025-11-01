@@ -2,6 +2,10 @@ class WeatherSimulator {
     constructor() {
         this.observers = [];
         this.currentStrategy = 'realtime';
+        this.bridgeConfig = {
+            notificationType: 'scheduled',
+            senderType: 'push'
+        };
         this.weatherData = {
             temperature: 20,
             humidity: 65,
@@ -32,8 +36,8 @@ class WeatherSimulator {
         document.getElementById('scheduled-btn').addEventListener('click', () => this.setScheduledStrategy());
         document.getElementById('manual-btn').addEventListener('click', () => this.setManualStrategy());
 
-        document.getElementById('mobile-factory').addEventListener('click', () => this.addMobileDevices());
-        document.getElementById('web-factory').addEventListener('click', () => this.addWebComponents());
+        document.getElementById('mobile-factory').addEventListener('click', () => this.addMobileDevice());
+        document.getElementById('web-factory').addEventListener('click', () => this.addWebDevice());
         document.getElementById('smarthome-factory').addEventListener('click', () => this.addSmartHome());
 
         document.getElementById('update-manual').addEventListener('click', () => this.updateManualData());
@@ -108,8 +112,6 @@ class WeatherSimulator {
             this.updateWeatherDisplay();
             this.logEvent(`✅ Manual data applied: ${temp}°C, ${humidity}%`);
         } catch (error) {
-            console.error('API error:', error);
-            // Локальный fallback
             this.weatherData.temperature = temp;
             this.weatherData.humidity = humidity;
             this.weatherData.pressure = pressure;
@@ -131,19 +133,15 @@ class WeatherSimulator {
         if (temp < -60 || temp > 60) {
             return { isValid: false, message: "Temperature must be between -60°C and 60°C" };
         }
-
         if (humidity < 0 || humidity > 100) {
             return { isValid: false, message: "Humidity must be between 0% and 100%" };
         }
-
         if (pressure < 870 || pressure > 1085) {
             return { isValid: false, message: "Pressure must be between 870 hPa and 1085 hPa" };
         }
-
         if (windSpeed < 0 || windSpeed > 150) {
             return { isValid: false, message: "Wind speed must be between 0 km/h and 150 km/h" };
         }
-
         return { isValid: true, message: "Data is valid" };
     }
 
@@ -158,11 +156,6 @@ class WeatherSimulator {
         document.getElementById('manual-input-section').style.display = 'block';
     }
 
-    hideManualInput() {
-        document.getElementById('manual-input-section').style.display = 'none';
-    }
-
-    // ... остальные методы без изменений ...
     generateRealTimeData() {
         this.weatherData.temperature = 18 + (Math.random() * 15);
         this.weatherData.humidity = 50 + (Math.random() * 40);
@@ -194,34 +187,44 @@ class WeatherSimulator {
         document.getElementById('description').textContent = this.weatherData.description;
     }
 
-    addMobileDevices() {
-        const devices = ['Weather Display', 'Push Notifications', 'Quick Controls'];
-        devices.forEach(device => this.addObserver(`📱 ${device}`));
-        this.logEvent('Mobile Factory: Created 3 devices');
+    addMobileDevice() {
+        this.addObserver("📱 Mobile Device");
+        this.logEvent('✅ Mobile Device added');
     }
 
-    addWebComponents() {
-        const components = ['Dashboard', 'Alert Panel', 'Settings Panel'];
-        components.forEach(component => this.addObserver(`🖥️ ${component}`));
-        this.logEvent('Web Factory: Created 3 components');
+    addWebDevice() {
+        this.addObserver("🖥️ Web Device");
+        this.logEvent('✅ Web Device added');
     }
 
     addSmartHome() {
-        const devices = ['Wall Display', 'Voice Assistant', 'Climate Control'];
-        devices.forEach(device => this.addObserver(`🏠 ${device}`));
-        this.logEvent('SmartHome Factory: Created 3 devices');
+        this.addObserver("🏠 Smart Home");
+        this.logEvent('✅ Smart Home added');
     }
 
     addObserver(name) {
-        this.observers.push(name);
+        const observer = {
+            id: Date.now(),
+            name: name,
+            notificationType: this.bridgeConfig.notificationType,
+            senderType: this.bridgeConfig.senderType,
+            timestamp: new Date().toLocaleTimeString()
+        };
+
+        this.observers.push(observer);
         this.updateObserversList();
+        this.logEvent(`✅ ${name} added with ${this.bridgeConfig.notificationType} + ${this.bridgeConfig.senderType}`);
     }
 
     updateObserversList() {
         const list = document.getElementById('observers-list');
-        list.innerHTML = this.observers.map(observer =>
-            `<div class="observer-item active">${observer}</div>`
-        ).join('');
+        list.innerHTML = this.observers.map((observer, index) => `
+            <div class="observer-item active">
+                <strong>#${index + 1}. ${observer.name}</strong><br>
+                <small>📢 ${observer.notificationType} + ${observer.senderType}</small><br>
+                <small>⏰ ${observer.timestamp}</small>
+            </div>
+        `).join('');
     }
 
     notifyObservers() {
@@ -230,28 +233,22 @@ class WeatherSimulator {
             return;
         }
 
-        const notificationType = document.getElementById('notification-type').value;
-        const senderType = document.getElementById('sender-type').value;
-
         this.observers.forEach(observer => {
             let message = '';
-
-            if (notificationType === 'urgent') {
-                message = `🚨 URGENT ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.description}`;
+            if (observer.notificationType === 'urgent') {
+                message = `🚨 URGENT ${observer.senderType.toUpperCase()}: ${observer.name} - ${this.weatherData.temperature.toFixed(1)}°C`;
             } else {
-                message = `⏰ ${senderType.toUpperCase()}: ${observer} - ${this.weatherData.description}`;
+                message = `⏰ ${observer.senderType.toUpperCase()}: ${observer.name} - ${this.weatherData.description}`;
             }
-
-            this.addNotification(message, notificationType);
+            this.addNotification(message, observer.notificationType);
         });
-
         this.logEvent(`Notified ${this.observers.length} observers`);
     }
 
     updateBridgeConfig() {
-        const notificationType = document.getElementById('notification-type').value;
-        const senderType = document.getElementById('sender-type').value;
-        this.logEvent(`Bridge: ${notificationType} via ${senderType}`);
+        this.bridgeConfig.notificationType = document.getElementById('notification-type').value;
+        this.bridgeConfig.senderType = document.getElementById('sender-type').value;
+        this.logEvent(`🔧 Bridge configured: ${this.bridgeConfig.notificationType} + ${this.bridgeConfig.senderType}`);
     }
 
     addNotification(message, type) {
@@ -260,10 +257,8 @@ class WeatherSimulator {
             type,
             timestamp: new Date().toLocaleTimeString()
         };
-
         this.notifications.unshift(notification);
         if (this.notifications.length > 8) this.notifications.pop();
-
         this.updateNotificationsDisplay();
     }
 
@@ -280,7 +275,6 @@ class WeatherSimulator {
         const timestamp = new Date().toLocaleTimeString();
         this.eventLog.unshift(`[${timestamp}] ${message}`);
         if (this.eventLog.length > 12) this.eventLog.pop();
-
         this.updateEventLog();
     }
 
@@ -289,6 +283,14 @@ class WeatherSimulator {
         container.innerHTML = this.eventLog.map(entry =>
             `<div class="log-entry">${entry}</div>`
         ).join('');
+    }
+
+    getWeatherDescription(temp) {
+        if (temp > 28) return "Hot ☀️";
+        if (temp > 24) return "Warm 🌤️";
+        if (temp > 18) return "Mild ⛅";
+        if (temp > 12) return "Cool 🌥️";
+        return "Chilly 🌧️";
     }
 }
 
