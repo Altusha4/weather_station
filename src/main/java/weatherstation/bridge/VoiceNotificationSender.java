@@ -5,9 +5,4 @@ public class VoiceNotificationSender implements NotificationSender {
     public void send(String message) {
         System.out.println("Voice Notification: " + message);
     }
-
-    @Override
-    public String getType() {
-        return "VOICE";
-    }
 }

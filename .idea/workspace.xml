@@ -5,16 +5,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b058a5fb-fadc-4b01-b081-2161a30ecd0e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/weatherstation/core/RealWeatherService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/EmailNotificationSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/EmailNotificationSender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/Notification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/Notification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/NotificationSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/NotificationSender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/PushNotificationSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/PushNotificationSender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/ScheduledNotification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/ScheduledNotification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/UrgentNotification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/UrgentNotification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/VoiceNotificationSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/bridge/VoiceNotificationSender.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/controller/WeatherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/controller/WeatherController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/core/WeatherStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/core/WeatherStation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/core/observer/DisplayObserver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/core/observer/DisplayObserver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/core/strategy/RealTimeStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/core/strategy/RealTimeStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/core/strategy/ScheduledStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/core/strategy/ScheduledStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/demo/WeatherDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/demo/WeatherDemo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/factory/MobileObserverFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/factory/MobileObserverFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/factory/ObserverFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/factory/ObserverFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/factory/SmartHomeFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/factory/SmartHomeFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/weatherstation/factory/WebObserverFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/weatherstation/factory/WebObserverFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/main/resources/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/main/resources/static/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/main/resources/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/main/resources/static/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/main/resources/static/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/static/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/js/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/EmailNotificationSender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/EmailNotificationSender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/NotificationSender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/NotificationSender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/PushNotificationSender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/PushNotificationSender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/ScheduledNotification.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/ScheduledNotification.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/UrgentNotification.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/UrgentNotification.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/bridge/VoiceNotificationSender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/bridge/VoiceNotificationSender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/controller/ManualRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/controller/ManualRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/controller/WeatherController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/controller/WeatherController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/core/observer/DisplayObserver.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/core/observer/DisplayObserver.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/demo/WeatherDemo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/demo/WeatherDemo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/factory/MobileObserverFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/factory/MobileObserverFactory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/factory/ObserverFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/factory/ObserverFactory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/factory/SmartHomeFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/factory/SmartHomeFactory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weatherstation/factory/WebObserverFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weatherstation/factory/WebObserverFactory.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,35 +81,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.WeatherDemo.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.WeatherApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/admin/OneDrive - Astana IT University&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.20229885&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.WeatherDemo.executor": "Run",
+    "JavaScript Debug.index.html.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.WeatherApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "go.import.settings.migrated": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/admin/OneDrive - Astana IT University",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.20229885",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\admin\OneDrive - Astana IT University\on\weather-notification-system\src\main\resources\static" />
@@ -117,7 +146,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1761972874278</updated>
-      <workItem from="1761972875734" duration="33980000" />
+      <workItem from="1761972875734" duration="35212000" />
+      <workItem from="1762171136186" duration="11458000" />
     </task>
     <servers />
   </component>

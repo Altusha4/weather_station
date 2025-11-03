@@ -1,7 +1,8 @@
 package weatherstation.demo;
 
 import weatherstation.core.WeatherStation;
-import weatherstation.core.observer.Observer;
+import weatherstation.core.WeatherData;
+import weatherstation.core.observer.*;
 import weatherstation.core.strategy.*;
 import weatherstation.factory.*;
 import weatherstation.bridge.*;
@@ -10,38 +11,47 @@ public class WeatherDemo {
     public static void main(String[] args) {
         WeatherStation station = new WeatherStation();
 
-        System.out.println("=== Weather Notification System Demo ===");
-        System.out.println("Demonstrating 4 Design Patterns:");
-        System.out.println("1. Observer Pattern");
-        System.out.println("2. Strategy Pattern");
-        System.out.println("3. Factory Pattern");
-        System.out.println("4. Bridge Pattern\n");
+        System.out.println("=== Weather System Demo ===\n");
 
-        System.out.println("--- Factory Pattern: Creating Devices ---");
+        System.out.println("1. Creating Observers (Factory Pattern)");
         ObserverFactory mobileFactory = new MobileObserverFactory();
         ObserverFactory webFactory = new WebObserverFactory();
+        ObserverFactory smartHomeFactory = new SmartHomeFactory();
 
-        station.addObserver(mobileFactory.createDisplay());
-        station.addObserver(webFactory.createDisplay());
+        station.addObserver(mobileFactory.createObserver("Weather App"));
+        station.addObserver(webFactory.createObserver("Dashboard"));
+        station.addObserver(smartHomeFactory.createObserver("Voice Control"));
 
-        System.out.println("\n--- Bridge Pattern: Configuring Notifications ---");
+        System.out.println("\n2. Testing Notifications (Bridge Pattern)");
         NotificationSender pushSender = new PushNotificationSender();
-        Notification urgentPush = new UrgentNotification(pushSender);
+        NotificationSender emailSender = new EmailNotificationSender();
 
-        System.out.println("\n--- Strategy: Real-time (on-demand) ---");
+        new UrgentNotification(pushSender).notify("Storm warning!");
+        new ScheduledNotification(emailSender).notify("Daily forecast");
+
+        System.out.println("\n3. Testing Strategies:");
+
+        System.out.println("- Real-time Strategy");
         station.setUpdateStrategy(new RealTimeStrategy());
         station.updateWeatherData();
+        printWeather(station.getCurrentData());
 
-        System.out.println("\n--- Strategy: Scheduled (hourly forecast) ---");
+        System.out.println("- Scheduled Strategy");
         station.setUpdateStrategy(new ScheduledStrategy());
         station.updateWeatherData();
+        printWeather(station.getCurrentData());
 
-        System.out.println("\n--- Strategy: Manual Input ---");
+        System.out.println("- Manual Strategy");
         ManualStrategy manualStrategy = new ManualStrategy();
         manualStrategy.setManualData(25.5, 80.0, 1008.0, 15.0);
         station.setUpdateStrategy(manualStrategy);
         station.updateWeatherData();
+        printWeather(station.getCurrentData());
 
-        System.out.println("\n=== Demo Completed ===");
+        System.out.println("\n=== Demo Complete ===");
+    }
+
+    private static void printWeather(WeatherData data) {
+        System.out.println("Weather: " + data.getTemperature() + "°C, " + data.getDescription());
     }
 }

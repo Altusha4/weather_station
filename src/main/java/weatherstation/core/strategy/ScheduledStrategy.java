@@ -1,24 +1,63 @@
 package weatherstation.core.strategy;
 
 import weatherstation.core.WeatherData;
+import weatherstation.core.RealWeatherService;
+import java.time.LocalTime;
 
 public class ScheduledStrategy implements UpdateStrategy {
-    private int updateCount = 0;
-    private WeatherData[] hourlyData = {
-            new WeatherData(16.0, 70.0, 1015.0, 5.0, "🌅 Morning: 16°C, Partly Cloudy"),
-            new WeatherData(22.0, 60.0, 1013.0, 8.0, "☀️ Noon: 22°C, Sunny"),
-            new WeatherData(19.0, 65.0, 1014.0, 12.0, "🌇 Evening: 19°C, Breezy"),
-            new WeatherData(14.0, 75.0, 1016.0, 3.0, "🌙 Night: 14°C, Clear")
-    };
+    private String city;
+    private RealWeatherService weatherService;
+    public ScheduledStrategy() {
+        this.city = "almaty";
+        this.weatherService = new RealWeatherService();
+    }
     @Override
     public WeatherData getWeatherData() {
-        updateCount++;
-        WeatherData data = hourlyData[updateCount % hourlyData.length];
-        System.out.println("Scheduled forecast: " + data.getDescription());
-        return data;
+        try {
+            WeatherData realData = weatherService.getRealWeatherData(city);
+            int hour = LocalTime.now().getHour();
+
+            String timeOfDay = getTimeOfDay(hour);
+            String description = String.format("%s forecast for %s: %.1f°C, %s",
+                    timeOfDay, getCityName(), realData.getTemperature(), realData.getDescription());
+
+            System.out.println("Scheduled forecast for " + city + " - Real data: " + realData.getTemperature() + "°C");
+
+            return new WeatherData(
+                    realData.getTemperature(),
+                    realData.getHumidity(),
+                    realData.getPressure(),
+                    realData.getWindSpeed(),
+                    description
+            );
+
+        } catch (Exception e) {
+            System.out.println("API failed, using fallback for " + city);
+            return getFallbackData();
+        }
     }
     @Override
     public String getStrategyName() {
-        return "Hourly Forecast";
+        return "Real Forecast for " + getCityName();
+    }
+    private String getTimeOfDay(int hour) {
+        if (hour >= 5 && hour < 12) return "Morning";
+        if (hour >= 12 && hour < 17) return "Afternoon";
+        if (hour >= 17 && hour < 21) return "Evening";
+        return "Night";
+    }
+    private String getCityName() {
+        switch (city) {
+            case "almaty": return "Almaty";
+            case "astana": return "Astana";
+            case "shymkent": return "Shymkent";
+            case "aktobe": return "Aktobe";
+            case "karaganda": return "Karaganda";
+            case "aktau": return "Aktau";
+            default: return city;
+        }
+    }
+    private WeatherData getFallbackData() {
+        return new WeatherData(20, 65, 1013, 5, "Forecast data temporarily unavailable");
     }
 }

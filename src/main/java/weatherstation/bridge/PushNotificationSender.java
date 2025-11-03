@@ -5,9 +5,4 @@ public class PushNotificationSender implements NotificationSender {
     public void send(String message) {
         System.out.println("Push Notification: " + message);
     }
-
-    @Override
-    public String getType() {
-        return "PUSH";
-    }
 }
