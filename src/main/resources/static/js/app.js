@@ -563,10 +563,34 @@ class WeatherSimulator {
                 ? `🚨 URGENT: ${this.weatherData.temperature.toFixed(1)}°C weather alert`
                 : `⏰ Scheduled: ${this.weatherData.description}`;
 
+            if (senderType === 'voice') {
+                this.speakNotification(message);
+            }
             this.addNotification(message, notificationType, senderType, observer.name);
         });
 
         this.logEvent(`✅ Notifications sent to ${this.observers.length} observers`);
+    }
+    speakNotification(message) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            const speech = new SpeechSynthesisUtterance(message);
+            speech.lang = 'en-US';
+            speech.rate = 0.9;
+            speech.pitch = 1.0;
+
+            speech.onstart = () => {
+                console.log('Voice notification started');
+            };
+            speech.onend = () => {
+                console.log('Voice notification completed');
+            };
+            window.speechSynthesis.speak(speech);
+            this.logEvent('🔊 Voice notification playing: ' + message);
+        } else {
+            this.logEvent('❌ Voice synthesis not supported in this browser');
+        }
     }
 
     updateBridgeConfig() {

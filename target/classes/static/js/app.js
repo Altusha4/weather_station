@@ -10,20 +10,16 @@ class RealWeatherService {
             aktau: { lat: 43.6416, lon: 51.1717, name: 'Aktau' }
         };
     }
-
     async getRealWeather(city) {
         const coords = this.cities[city];
         if (!coords) return null;
-
         try {
             const response = await fetch(
                 `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${this.apiKey}&units=metric`
             );
-
             if (!response.ok) {
                 throw new Error(`API Error: ${response.status}`);
             }
-
             const data = await response.json();
             return this.formatWeatherData(data, coords.name);
         } catch (error) {
@@ -31,18 +27,15 @@ class RealWeatherService {
             return this.getFallbackData(city);
         }
     }
-
     async getHourlyForecast(city) {
         const coords = this.cities[city];
         try {
             const response = await fetch(
                 `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lon}&appid=${this.apiKey}&units=metric`
             );
-
             if (!response.ok) {
                 throw new Error(`API Error: ${response.status}`);
             }
-
             const data = await response.json();
             return this.formatHourlyData(data);
         } catch (error) {
@@ -50,7 +43,6 @@ class RealWeatherService {
             return this.generateRealisticForecast(city);
         }
     }
-
     formatWeatherData(apiData, cityName) {
         const weatherDescription = apiData.weather[0].description;
         const englishDescription = weatherDescription.charAt(0).toUpperCase() + weatherDescription.slice(1);
@@ -64,7 +56,6 @@ class RealWeatherService {
             city: cityName
         };
     }
-
     formatHourlyData(apiData) {
         return apiData.list.slice(0, 8).map(item => ({
             time: new Date(item.dt * 1000).getHours() + ':00',
@@ -74,7 +65,6 @@ class RealWeatherService {
             humidity: item.main.humidity
         }));
     }
-
     getWeatherEmoji(weatherId) {
         if (weatherId >= 200 && weatherId < 300) return '⛈️';
         if (weatherId >= 300 && weatherId < 400) return '🌧️';
@@ -87,7 +77,6 @@ class RealWeatherService {
         if (weatherId > 802) return '☁️';
         return '🌤️';
     }
-
     getFallbackData(city) {
         const fallbackData = {
             almaty: { temp: -2.5, humidity: 75, pressure: 1020, wind: 3.2, desc: "❄️ Snow" },
@@ -99,16 +88,13 @@ class RealWeatherService {
         };
         return fallbackData[city];
     }
-
     generateRealisticForecast(city) {
         const baseData = this.getFallbackData(city);
         const hours = [];
         const currentHour = new Date().getHours();
-
         for (let i = 0; i < 24; i++) {
             const hour = (currentHour + i) % 24;
             const tempVariation = Math.sin((hour - 12) * Math.PI / 12) * 2;
-
             hours.push({
                 time: (hour) + ':00',
                 temperature: baseData.temp + tempVariation,
@@ -119,7 +105,6 @@ class RealWeatherService {
         }
         return hours;
     }
-
     getRealisticDescription(temp, hour) {
         const isDay = hour >= 6 && hour <= 20;
         if (temp > 30) return isDay ? "🔥" : "🔥";
@@ -132,7 +117,6 @@ class RealWeatherService {
         return "🧊";
     }
 }
-
 class LiveWeatherEngine {
     constructor(weatherService) {
         this.weatherService = weatherService;
@@ -143,27 +127,21 @@ class LiveWeatherEngine {
         this.updateCount = 0;
         this.currentCity = null;
     }
-
     startLiveUpdates(city) {
         if (this.liveInterval) {
             clearInterval(this.liveInterval);
         }
-
         this.isLiveMode = true;
         this.updateCount = 0;
         this.currentCity = city;
 
-        // Первое немедленное обновление
         this.performLiveUpdate();
-
-        // Затем каждую минуту
         this.liveInterval = setInterval(() => {
             this.performLiveUpdate();
         }, this.updateInterval);
 
         return this.isLiveMode;
     }
-
     stopLiveUpdates() {
         this.isLiveMode = false;
         if (this.liveInterval) {
@@ -172,10 +150,8 @@ class LiveWeatherEngine {
         }
         return this.isLiveMode;
     }
-
     async performLiveUpdate() {
         if (!this.currentCity) return null;
-
         try {
             const currentWeather = await this.weatherService.getRealWeather(this.currentCity);
             if (currentWeather) {
@@ -188,7 +164,6 @@ class LiveWeatherEngine {
         }
         return null;
     }
-
     addToHistory(weatherData) {
         const timestamp = new Date();
         const historyItem = {
@@ -196,15 +171,11 @@ class LiveWeatherEngine {
             timestamp: timestamp,
             timeString: timestamp.toLocaleTimeString()
         };
-
         this.weatherHistory.unshift(historyItem);
-
-        // Храним только последние 5 записей для анализа трендов
         if (this.weatherHistory.length > 5) {
             this.weatherHistory.pop();
         }
     }
-
     calculateTrends() {
         if (this.weatherHistory.length < 2) {
             return {
@@ -214,7 +185,6 @@ class LiveWeatherEngine {
                 windSpeed: { trend: 'stable', value: 0, direction: '→', unit: 'km/h/min' }
             };
         }
-
         const current = this.weatherHistory[0];
         const previous = this.weatherHistory[1];
 
@@ -228,7 +198,6 @@ class LiveWeatherEngine {
             windSpeed: this.calculateTrend(current.windSpeed, previous.windSpeed, timeDiff, 'km/h/min')
         };
     }
-
     calculateTrend(current, previous, timeDiff, unit) {
         const change = current - previous;
         const changePerMinute = change / timeDiff;
@@ -245,7 +214,6 @@ class LiveWeatherEngine {
                 trend = 'falling';
             }
         }
-
         return {
             trend,
             value: Math.abs(changePerMinute.toFixed(2)),
@@ -254,7 +222,6 @@ class LiveWeatherEngine {
             change
         };
     }
-
     getTimeUntilNextUpdate() {
         if (!this.liveInterval || !this.weatherHistory[0]) return 60;
 
@@ -264,7 +231,6 @@ class LiveWeatherEngine {
 
         return Math.max(0, Math.floor((nextUpdate - now) / 1000));
     }
-
     getUpdateStatus() {
         if (!this.isLiveMode) {
             return { mode: 'off', text: 'Live updates off' };
@@ -283,7 +249,6 @@ class LiveWeatherEngine {
         };
     }
 }
-
 class WeatherSimulator {
     constructor() {
         this.observers = [];
@@ -305,9 +270,6 @@ class WeatherSimulator {
         this.currentCarouselIndex = 0;
         this.hoursPerView = 5;
         this.hourlyData = [];
-        this.realTimeInterval = null;
-        this.isAutoUpdate = false;
-        this.weatherHistory = [20];
         this.currentCity = 'almaty';
 
         this.weatherService = new RealWeatherService();
@@ -317,7 +279,6 @@ class WeatherSimulator {
         this.loadInitialWeather();
         setTimeout(() => this.switchCity('almaty'), 100);
 
-        // Запускаем обновление UI для live-статуса
         this.startStatusUpdates();
     }
 
@@ -326,7 +287,6 @@ class WeatherSimulator {
             this.updateLiveIndicators();
         }, 1000);
     }
-
     async loadInitialWeather() {
         try {
             const response = await fetch('/api/weather/current');
@@ -337,7 +297,6 @@ class WeatherSimulator {
             console.log('Using default weather data');
         }
     }
-
     initializeEventListeners() {
         document.getElementById('realtime-btn').addEventListener('click', () => this.setRealTimeStrategy());
         document.getElementById('scheduled-btn').addEventListener('click', () => this.setScheduledStrategy());
@@ -362,7 +321,6 @@ class WeatherSimulator {
                 e.target.classList.add('active');
             });
         });
-
         document.querySelector('.prev-btn')?.addEventListener('click', () => {
             if (this.currentCarouselIndex > 0) {
                 this.currentCarouselIndex--;
@@ -370,7 +328,6 @@ class WeatherSimulator {
                 this.updateCarouselButtons();
             }
         });
-
         document.querySelector('.next-btn')?.addEventListener('click', () => {
             const maxIndex = Math.max(0, this.hourlyData.length - this.hoursPerView);
             if (this.currentCarouselIndex < maxIndex) {
@@ -380,11 +337,9 @@ class WeatherSimulator {
             }
         });
     }
-
     async setRealTimeStrategy() {
         this.liveEngine.startLiveUpdates(this.currentCity);
         this.setStrategy('realtime');
-
         try {
             const currentWeather = await this.liveEngine.performLiveUpdate();
             if (currentWeather) {
@@ -402,10 +357,8 @@ class WeatherSimulator {
             this.logEvent('🔄 Live updates started (using fallback data)');
         }
     }
-
     async setScheduledStrategy() {
         const currentCity = this.currentCity;
-
         try {
             const response = await fetch(`/api/weather/strategy/scheduled?city=${currentCity}`, {
                 method: 'POST'
@@ -422,12 +375,10 @@ class WeatherSimulator {
             this.logEvent(`⏰ Scheduled forecast generated for ${currentCity}`);
         }
     }
-
     setManualStrategy() {
         this.setStrategy('manual');
         this.showManualInput();
     }
-
     setStrategy(strategy) {
         this.currentStrategy = strategy;
         document.querySelectorAll('.strategy-btn').forEach(btn => btn.classList.remove('active'));
@@ -446,7 +397,6 @@ class WeatherSimulator {
             }
         }
     }
-
     updateLiveIndicators() {
         const status = this.liveEngine.getUpdateStatus();
         const trends = status.trends;
@@ -458,7 +408,6 @@ class WeatherSimulator {
         const descElement = document.getElementById('description');
 
         if (this.currentStrategy === 'realtime' && this.liveEngine.isLiveMode) {
-            // Добавляем тренды к основным значениям
             tempElement.innerHTML = `${this.weatherData.temperature.toFixed(1)}°C 
             <span style="color: ${trends.temperature.direction === '↑' ? '#4CAF50' : trends.temperature.direction === '↓' ? '#f44336' : '#75b4e3'}; 
             font-size: 0.8em;">${trends.temperature.direction}</span>`;
@@ -471,26 +420,21 @@ class WeatherSimulator {
             <span style="color: ${trends.windSpeed.direction === '↑' ? '#f44336' : trends.windSpeed.direction === '↓' ? '#4CAF50' : '#75b4e3'}; 
             font-size: 0.8em;">${trends.windSpeed.direction}</span>`;
 
-            // УБРАЛ дублирование "LIVE" - оставляем только статус с таймером
             descElement.innerHTML = `${this.weatherData.description} 
             <span style="font-size:0.7em; color:#75b4e3; animation: pulse 2s infinite;">• ${status.text}</span>`;
         } else {
-            // Возвращаем обычное отображение
             tempElement.textContent = `${this.weatherData.temperature.toFixed(1)}°C`;
             humidityElement.textContent = `${this.weatherData.humidity.toFixed(1)}%`;
             windElement.textContent = `${this.weatherData.windSpeed.toFixed(1)} km/h`;
             descElement.textContent = this.weatherData.description;
         }
     }
-
     showManualInput() {
         document.getElementById('manual-input-section').style.display = 'block';
     }
-
     hideManualInput() {
         document.getElementById('manual-input-section').style.display = 'none';
     }
-
     generateScheduledData() {
         const forecasts = [
             { temp: 16, desc: "🌅 Morning: 16°C, Partly Cloudy" },
@@ -505,7 +449,6 @@ class WeatherSimulator {
         this.weatherData.windSpeed = 8;
         this.weatherData.description = forecast.desc;
     }
-
     updateWeatherDisplay() {
         document.getElementById('temperature').textContent = `${this.weatherData.temperature.toFixed(1)}°C`;
         document.getElementById('humidity').textContent = `${this.weatherData.humidity.toFixed(1)}%`;
@@ -523,16 +466,13 @@ class WeatherSimulator {
 
         this.updateLiveIndicators();
     }
-
     async switchCity(city) {
         this.currentCity = city;
         this.logEvent(`🏙️ Loading real weather for ${city}...`);
 
-        // Если в live-режиме, обновляем город в движке
         if (this.liveEngine.isLiveMode) {
             this.liveEngine.startLiveUpdates(city);
         }
-
         try {
             const currentWeather = await this.weatherService.getRealWeather(city);
             const hourlyForecast = await this.weatherService.getHourlyForecast(city);
@@ -557,7 +497,6 @@ class WeatherSimulator {
             this.logEvent(`⚠️ Using realistic data for ${city}`);
         }
     }
-
     useRealisticCityData(city) {
         const realisticData = this.weatherService.getFallbackData(city);
         this.weatherData = {
@@ -571,22 +510,18 @@ class WeatherSimulator {
         this.updateWeatherDisplay();
         this.updateCarousel();
     }
-
     addMobileDevice() {
         this.addObserver("📱 Mobile Device");
         this.logEvent('✅ Mobile Device added via MobileFactory');
     }
-
     addWebDevice() {
         this.addObserver("🖥️ Web Device");
         this.logEvent('✅ Web Device added via WebFactory');
     }
-
     addSmartHome() {
         this.addObserver("🏠 Smart Home");
         this.logEvent('✅ Smart Home added via SmartHomeFactory');
     }
-
     addObserver(name) {
         const observer = {
             id: Date.now() + Math.random(),
@@ -595,19 +530,16 @@ class WeatherSimulator {
             senderType: this.bridgeConfig.senderType,
             timestamp: new Date().toLocaleTimeString()
         };
-
         this.observers.push(observer);
         this.updateObserversList();
         this.logEvent(`✅ ${name} added with ${this.bridgeConfig.notificationType} + ${this.bridgeConfig.senderType}`);
     }
-
     updateObserversList() {
         const list = document.getElementById('observers-list');
         if (this.observers.length === 0) {
             list.innerHTML = '<div class="empty-state">No observers yet</div>';
             return;
         }
-
         list.innerHTML = this.observers.map((observer, index) => `
             <div class="observer-item active">
                 <strong>#${index + 1}. ${observer.name}</strong><br>
@@ -616,7 +548,6 @@ class WeatherSimulator {
             </div>
         `).join('');
     }
-
     notifyObservers() {
         if (this.observers.length === 0) {
             this.logEvent('❌ No observers to notify');
@@ -633,10 +564,41 @@ class WeatherSimulator {
                 ? `🚨 URGENT: ${this.weatherData.temperature.toFixed(1)}°C weather alert`
                 : `⏰ Scheduled: ${this.weatherData.description}`;
 
+            // ДОБАВЬ ЭТО - голосовые уведомления
+            if (senderType === 'voice') {
+                this.speakNotification(message);
+            }
+
             this.addNotification(message, notificationType, senderType, observer.name);
         });
 
         this.logEvent(`✅ Notifications sent to ${this.observers.length} observers`);
+    }
+
+    // ДОБАВЬ ЭТОТ МЕТОД для голосовых уведомлений
+    speakNotification(message) {
+        if ('speechSynthesis' in window) {
+            // Останавливаем предыдущее воспроизведение
+            window.speechSynthesis.cancel();
+
+            const speech = new SpeechSynthesisUtterance(message);
+            speech.lang = 'en-US';
+            speech.rate = 0.9; // Немного медленнее для понятности
+            speech.pitch = 1.0;
+
+            speech.onstart = () => {
+                console.log('Voice notification started');
+            };
+
+            speech.onend = () => {
+                console.log('Voice notification completed');
+            };
+
+            window.speechSynthesis.speak(speech);
+            this.logEvent('🔊 Voice notification playing: ' + message);
+        } else {
+            this.logEvent('❌ Voice synthesis not supported in this browser');
+        }
     }
 
     updateBridgeConfig() {
@@ -751,7 +713,6 @@ class WeatherSimulator {
             alert(`❌ Invalid data: ${validation.message}`);
             return;
         }
-
         try {
             const response = await fetch('/api/weather/strategy/manual', {
                 method: 'POST',
@@ -773,7 +734,6 @@ class WeatherSimulator {
             this.updateWeatherDisplay();
             this.logEvent(`✅ Manual data applied locally: ${temp}°C, ${humidity}%`);
         }
-
         ['manual-temp', 'manual-humidity', 'manual-pressure', 'manual-wind'].forEach(id => {
             document.getElementById(id).value = '';
         });
@@ -790,8 +750,6 @@ class WeatherSimulator {
         return { isValid: true, message: "Data is valid" };
     }
 }
-
-// Добавляем CSS анимацию для live-индикатора
 const style = document.createElement('style');
 style.textContent = `
     @keyframes pulse {
